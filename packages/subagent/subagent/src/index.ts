@@ -182,12 +182,16 @@ interface BrowserPromptSource {
   readonly principal?: Principal
 }
 
-/** Host configuration for continuable subagent capacity. */
+/** Host configuration for continuable subagent capacity and delegation selection. */
 export interface Config {
   /** Maximum live children sharing uninterrupted continuable parent links; defaults to 8. */
   maxActiveSubagents: Volatile<number>
   /** Default delegation depth for tools without an explicit limit; defaults to 1. */
   maxDepth: Volatile<number>
+  /** Delegation tool name every session routes through; `undefined` keeps every instance available. */
+  delegationTool?: Volatile<string | undefined>
+  /** Whether delegation is enabled at all; `false` disables every subagent. */
+  delegationEnabled?: Volatile<boolean>
 }
 
 /** Named provider registry with managed activations, durable discovery, and local child messaging. */
@@ -195,6 +199,8 @@ export class SubagentRuntime extends TypertRemoteService {
   static Config = z.object({
     maxDepth: z.number().step(1).min(0).max(Number.MAX_SAFE_INTEGER).default(1).volatile(),
     maxActiveSubagents: z.number().step(1).min(1).max(Number.MAX_SAFE_INTEGER).default(8).volatile(),
+    delegationTool: z.string().volatile(),
+    delegationEnabled: z.boolean().default(true).volatile(),
   })
   static inject = ['workingDirectory']
   private providers = new Map<string, SubagentProvider>()

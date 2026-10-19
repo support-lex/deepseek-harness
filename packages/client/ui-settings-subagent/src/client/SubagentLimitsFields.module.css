@@ -39,3 +39,15 @@
 .depthTable tr + tr {
   border-top: 0.5px solid var(--dsw-alias-border-l2);
 }
+
+.delegationEnabled {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.delegationEnabled input {
+  margin: 0;
+}

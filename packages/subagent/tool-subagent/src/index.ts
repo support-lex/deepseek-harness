@@ -22,6 +22,8 @@ import {
   parentAgentOptionsForDelegation,
 } from '@deepseek-ai/dsh-subagent'
 import type { SubagentProvider } from '@deepseek-ai/dsh-subagent'
+import { subagentSelectionFor } from './selection.ts'
+import type { SubagentSelection } from './types.ts'
 import {
   assertAllowedModelSelection,
   hasConfiguredLlmSelection,
@@ -279,6 +281,28 @@ export async function apply(ctx: Context, config: Config, session?: Session): Pr
             // Non-agent callers provide no parent for delegation ownership.
             throw new Error('subagent tool requires a calling agent (exec.agent was undefined)')
           }
+          // The session's installed selection is read at delegation time, so a
+          // switch reaches the next delegation and never splits a run already in
+          // flight. Without a selection every instance stays available, matching
+          // the pre-selection behavior. The host's `subagent` settings section
+          // supplies the fallback when no entry point installed a ref.
+          const subagentService = runtimeCtx.get('subagents') as { config?: { delegationTool?: { get(): string | undefined }; delegationEnabled?: { get(): boolean } } } | undefined
+          const delegationTool = subagentService?.config?.delegationTool?.get()
+          const delegationEnabled = subagentService?.config?.delegationEnabled?.get()
+          const fallback: SubagentSelection = delegationEnabled === false
+            ? { kind: 'disabled' }
+            : delegationTool !== undefined && delegationTool !== ''
+              ? { kind: 'instance', tool: delegationTool }
+              : { kind: 'instance', tool: '' }
+          const selection: SubagentSelection = subagentSelectionFor(parent, fallback)
+          if (selection.kind === 'disabled') {
+            throw new Error('subagents are disabled for this session')
+          }
+          if (selection.tool !== '' && selection.tool !== toolName) {
+            throw new Error(
+              `this session's subagent delegations use \`${selection.tool}\`; call that tool instead`,
+            )
+          }
 
           const agentPreset = presets.resolve(args as PresetSelectionRequest)
           const modelRequest = args as DelegationModelRequest
@@ -502,4 +526,19 @@ export async function apply(ctx: Context, config: Config, session?: Session): Pr
   // new ancestry. Other registry changes are idempotent no-ops here.
   ctx.on('tools/change', reconcileComposedAgents)
   reconcileComposedAgents()
+
+  // Per-session selection guidance: exactly one delegation spelling per
+  // session, named so the model cannot guess between sibling instances. The
+  // section name is per-instance so two loaded instances can coexist.
+  ctx.systemPrompt.section({
+    name: `subagent-selection:${toolName}`,
+    order: 116.4,
+    text: (context) => {
+      const agent = context.agent
+      const selection = subagentSelectionFor(agent)
+      if (selection.kind === 'disabled') return 'Subagents are disabled in this session; do not attempt to delegate.'
+      const tool = selection.tool === '' ? toolName : selection.tool
+      return `Subagents in this session are started with the \`${tool}\` tool. Do not attempt any other delegation spelling.`
+    },
+  })
 }

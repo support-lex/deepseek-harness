@@ -2,20 +2,24 @@
 
 import type { SnapshotStore } from '@deepseek-ai/dsh-client-store'
 import {
-  SettingsFormModel, settingsNumberField,
+  SettingsFormModel, settingsNumberField, settingsTextField,
   type SettingsFieldSpec, type SettingsFieldState, type SettingsFormActions, type SettingsFormScope, type SettingsFormShell,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 
-/** Host-owned delegation defaults and live capacity. */
+/** Host-owned delegation defaults, live capacity, and delegation selection. */
 export interface SubagentLimitsSettings {
   maxDepth: number
   maxActiveSubagents: number
+  delegationTool?: string
+  delegationEnabled?: boolean
 }
 
 /** Effective values and drafts presented by the limits card. */
 export interface SubagentLimitsCardState extends SettingsFormShell {
   maxDepth: SettingsFieldState
   maxActiveSubagents: SettingsFieldState
+  delegationTool: SettingsFieldState
+  delegationEnabled: boolean
 }
 
 /** Actions and observable state bound by the slot renderer. */
@@ -23,6 +27,8 @@ export interface SubagentLimitsCardFace extends SettingsFormActions {
   hooks: {
     subagentLimitsCard: SnapshotStore<SubagentLimitsCardState>
   }
+  /** Stage the delegation-enabled flag alongside the form's text fields. */
+  setDelegationEnabled: (enabled: boolean) => void
 }
 
 function limitField(field: keyof SubagentLimitsSettings, minimum: number): SettingsFieldSpec {
@@ -42,14 +48,21 @@ function limitField(field: keyof SubagentLimitsSettings, minimum: number): Setti
 export class SubagentLimitsCardController {
   private readonly form: SettingsFormModel<SubagentLimitsSettings>
   private readonly store: SnapshotStore<SubagentLimitsCardState>
+  private delegationEnabled: boolean | undefined
 
   /** @param scope - The Host's `subagent` settings section. */
   constructor(scope: SettingsFormScope<SubagentLimitsSettings>) {
-    this.form = new SettingsFormModel(scope, [limitField('maxDepth', 0), limitField('maxActiveSubagents', 1)])
+    this.form = new SettingsFormModel(scope, [
+      limitField('maxDepth', 0),
+      limitField('maxActiveSubagents', 1),
+      settingsTextField('delegationTool'),
+    ])
     this.store = this.form.bind(() => ({
       ...this.form.shell(),
       maxDepth: this.form.field('maxDepth'),
       maxActiveSubagents: this.form.field('maxActiveSubagents'),
+      delegationTool: this.form.field('delegationTool'),
+      delegationEnabled: this.delegationEnabled ?? true,
     }))
   }
 
@@ -58,8 +71,16 @@ export class SubagentLimitsCardController {
    * @returns The limits snapshot and staged write actions.
    */
   inject(): SubagentLimitsCardFace {
-    return { hooks: { subagentLimitsCard: this.store }, ...this.form.actions() }
+    return {
+      hooks: { subagentLimitsCard: this.store },
+      ...this.form.actions(),
+      setDelegationEnabled: (enabled: boolean) => {
+        this.delegationEnabled = enabled
+        this.form.actions().edit('delegationTool', this.store.getSnapshot().delegationTool.text)
+      },
+    }
   }
+
   /** Release accepted-value subscriptions. */
   dispose(): void { this.form.dispose() }
 

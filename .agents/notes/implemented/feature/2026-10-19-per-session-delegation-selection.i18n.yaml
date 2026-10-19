@@ -1,0 +1,22 @@
+# Bilingual-pair consistency record for 2026-10-19-per-session-delegation-selection.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-10-19-per-session-delegation-selection.md
+/agent-note-per-session-delegation-selection:
+  en: 9ce5a178aa7204cc
+  zh: 376b74cfae600c15
+/agent-note-per-session-delegation-selection/problem:
+  en: cf1d87b314fd492c
+  zh: b2f89d60ee883ce0
+/agent-note-per-session-delegation-selection/decision:
+  en: 8658eceb921be76e
+  zh: d05023c2e65c8bda
+/agent-note-per-session-delegation-selection/alternatives-considered:
+  en: c60a3bf1c4e49cee
+  zh: e61afc51abd36797
+/agent-note-per-session-delegation-selection/consequences:
+  en: 9d739456fbe7dcd3
+  zh: a41f71f1e4afcf6d
+/agent-note-per-session-delegation-selection/verification:
+  en: ab77e0d27602dbe6
+  zh: 0b4e40c01ea598c8

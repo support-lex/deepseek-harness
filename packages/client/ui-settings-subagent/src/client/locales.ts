@@ -13,6 +13,8 @@ export type SubagentSettingsLocaleKey =
   | 'subagentMaxActive'
   | 'subagentCapacityHelpLabel' | 'subagentCapacityHelp'
   | 'subagentDepthInvalid'
+  | 'subagentDelegationTool' | 'subagentDelegationToolHelpLabel' | 'subagentDelegationToolHelp'
+  | 'subagentDelegationToolInvalid' | 'subagentDelegationEnabled'
   | 'subagentCapacityInvalid'
   | 'subagentModelSelectionTitle'
   | 'subagentModelSelectionToggle' | 'subagentModelSelectionChoose' | 'subagentModelSelectionAllowed'
@@ -42,6 +44,11 @@ export const en: Record<SubagentSettingsLocaleKey, string> = {
   subagentMaxActive: 'Subagent parallelism limit',
   subagentCapacityHelpLabel: 'About the Subagent parallelism limit',
   subagentCapacityHelp: 'Total live Subagents under the same main Agent, across all recursion levels. The main Agent is excluded. New start requests are rejected when the limit is reached.',
+  subagentDelegationTool: 'Delegation tool',
+  subagentDelegationToolHelpLabel: 'About delegation tool',
+  subagentDelegationToolHelp: 'The tool name every session routes its subagents through; leave blank to keep every instance available.',
+  subagentDelegationToolInvalid: 'Enter a tool name, or leave blank for all instances.',
+  subagentDelegationEnabled: 'Enable subagent delegation',
   subagentDepthInvalid: 'Enter a whole number of 0 or more.',
   subagentCapacityInvalid: 'Enter a whole number of 1 or more.',
   subagentModelSelectionTitle: 'Model selection',
@@ -81,6 +88,11 @@ export const zh: Record<SubagentSettingsLocaleKey, string> = {
   subagentMaxActive: '子智能体并行数量上限',
   subagentCapacityHelpLabel: '子智能体并行数量上限说明',
   subagentCapacityHelp: '同一主 Agent 下，所有递归层级同时存活的子智能体总数，主 Agent 不计入。达到上限时，新的启动请求会被拒绝。',
+  subagentDelegationTool: 'Delegation tool',
+  subagentDelegationToolHelpLabel: 'About delegation tool',
+  subagentDelegationToolHelp: 'The tool name every session routes its subagents through; leave blank to keep every instance available.',
+  subagentDelegationToolInvalid: 'Enter a tool name, or leave blank for all instances.',
+  subagentDelegationEnabled: 'Enable subagent delegation',
   subagentDepthInvalid: '请输入不小于 0 的整数。',
   subagentCapacityInvalid: '请输入不小于 1 的整数。',
   subagentModelSelectionTitle: '模型选择',
