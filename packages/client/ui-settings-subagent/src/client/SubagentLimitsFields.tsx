@@ -5,15 +5,15 @@ import { SettingsValueField } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { SubagentLimitsCardFace, SubagentLimitsCardState } from './subagent-limits-card-controller.ts'
 import css from './SubagentLimitsFields.module.css'
 
-/** Plain state and edit callbacks supplied by the owning card. */
+/** Plain state and edit callbacks supplied by the owning card, including delegation selection. */
 export type SubagentLimitsFieldsProps = PropsLocale<'settings.subagent'>
-  & Pick<SubagentLimitsCardFace, 'edit' | 'resetField'>
+  & Pick<SubagentLimitsCardFace, 'edit' | 'resetField' | 'setDelegationEnabled'>
   & { state: SubagentLimitsCardState }
 
 /**
- * Render the depth and capacity fields with their original validation and reset behavior.
+ * Render the depth, capacity, and delegation-selection fields.
  * @param props - Locale, staged fields, and edit callbacks.
- * @returns Two responsive fields and their application rules.
+ * @returns Responsive fields with their validation and reset behavior.
  */
 export function SubagentLimitsFields(props: SubagentLimitsFieldsProps) {
   const { t, state } = props
@@ -50,6 +50,27 @@ export function SubagentLimitsFields(props: SubagentLimitsFieldsProps) {
             resetLabel={t('reset')} invalidLabel={t('subagentCapacityInvalid')}
             numeric disabled={!state.writable || state.saving} {...state.maxActiveSubagents}
             onEdit={(text) => { props.edit('maxActiveSubagents', text) }} onReset={() => { props.resetField('maxActiveSubagents') }} />
+        </div>
+      </div>
+      <div className={css.limits}>
+        <div className={css.limit}>
+          <SettingsValueField id="plugin-config-subagent-delegation-tool" label={t('subagentDelegationTool')}
+            help={{ label: t('subagentDelegationToolHelpLabel'), content: <p>{t('subagentDelegationToolHelp')}</p> }}
+            overriddenLabel={t('overridden')}
+            resetLabel={t('reset')} invalidLabel={t('subagentDelegationToolInvalid')}
+            disabled={!state.writable || state.saving} {...state.delegationTool}
+            onEdit={(text) => { props.edit('delegationTool', text) }} onReset={() => { props.resetField('delegationTool') }} />
+        </div>
+        <div className={css.limit}>
+          <label className={css.delegationEnabled}>
+            <input
+              type="checkbox"
+              checked={state.delegationEnabled}
+              disabled={!state.writable || state.saving}
+              onChange={(event) => { props.setDelegationEnabled(event.target.checked) }}
+            />
+            {t('subagentDelegationEnabled')}
+          </label>
         </div>
       </div>
     </>

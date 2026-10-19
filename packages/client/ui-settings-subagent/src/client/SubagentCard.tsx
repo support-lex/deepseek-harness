@@ -34,7 +34,7 @@ export function SubagentCard(props: SubagentCardProps) {
           <section className={css.section} aria-labelledby={`${headingId}-limits`}>
             <h3 className={css.heading} id={`${headingId}-limits`}>{t('subagentLimitsTitle')}</h3>
             <SubagentLimitsFields t={t} state={{ ...limits, saving: state.saving }}
-              edit={props.editLimit} resetField={props.resetLimit} />
+              edit={props.editLimit} resetField={props.resetLimit} setDelegationEnabled={props.setDelegationEnabled} />
           </section>
         )
         : null}

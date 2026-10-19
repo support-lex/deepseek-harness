@@ -11,6 +11,7 @@ export interface SubagentCardFace {
   hooks: SubagentLimitsCardFace['hooks'] & SubagentModelSelectionCardFace['hooks']
   editLimit: SubagentLimitsCardFace['edit']
   resetLimit: SubagentLimitsCardFace['resetField']
+  setDelegationEnabled: SubagentLimitsCardFace['setDelegationEnabled']
   toggleEnabled: SubagentModelSelectionCardFace['toggleEnabled']
   toggleModel: SubagentModelSelectionCardFace['toggleModel']
   retryCatalog: SubagentModelSelectionCardFace['retryCatalog']
@@ -56,6 +57,7 @@ export function subagentCardFace(
     hooks: { ...limits.hooks, ...models.hooks },
     editLimit: limits.edit,
     resetLimit: limits.resetField,
+    setDelegationEnabled: limits.setDelegationEnabled,
     toggleEnabled: models.toggleEnabled,
     toggleModel: models.toggleModel,
     retryCatalog: models.retryCatalog,

@@ -40,6 +40,8 @@ function renderSubagent(
     ...settled,
     maxDepth: field('3'),
     maxActiveSubagents: field('8'),
+    delegationTool: field(''),
+    delegationEnabled: true,
     ...limitState,
   })
   const models = createSnapshotStore<SubagentModelSelectionCardState>({
